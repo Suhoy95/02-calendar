@@ -73,7 +73,15 @@ namespace calendar
             var mouthMap = Calendar.GetMothMap(date);
             for (int week = 0; week < 6; week++)
                 for (int day = 0; day < 7; day++)
+                {
+                    if (mouthMap[week][day] == date.Day) DrawCircle(source, week, day);
                     DrawDay(source, mouthMap[week][day], week, day);
+                }
+        }
+
+        private static void DrawCircle(Graphics source, int week, int day)
+        {
+            source.FillRectangle(new SolidBrush(Color.Gainsboro), new Rectangle(width / 7 * day, height / 8 * week + height / 4, width / 7, height / 8));
         }
 
         private static void DrawMouthInfo(Graphics source, DateTime date)
