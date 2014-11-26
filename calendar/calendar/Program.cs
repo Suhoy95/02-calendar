@@ -16,7 +16,7 @@ namespace calendar
             int width = 80 * 7, height = width/7*8;
             Bitmap img = new Bitmap(width, height);
             Graphics canvas = Graphics.FromImage(img);
-            Calendar_renderer.Render(canvas, new DateTime(2012, 12, 12), width, height);
+            Calendar_renderer.Render(canvas, new DateTime(2014, 11, 12), width, height);
             img.Save("test.png");
         }
     }

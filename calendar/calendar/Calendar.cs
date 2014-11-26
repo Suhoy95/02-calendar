@@ -18,16 +18,16 @@ namespace calendar
             while ((int) curDate.DayOfWeek != 1)
                 curDate = curDate.AddDays(-1);
 
-            for (int week = 0; week < 6; week++)
-            {
-                for (int day = 0; day < 7; day++)
-                {
-                    mouthMap[week][day] = curDate.Month == date.Month ? curDate.Day : - curDate.Day;
-                    curDate = curDate.AddDays(1);
-                }
-            }
+           return mouthMap.Select(week => 
+                                  week.Select(day => getDay(ref curDate, date)).ToArray()
+                                  ).ToArray();
+        }
 
-            return mouthMap;
+        private static int getDay(ref DateTime curDate, DateTime date)
+        {
+            int day = (curDate.Month == date.Month ? 1 : -1)*curDate.Day;
+            curDate = curDate.AddDays(1);
+            return day;
         }
     }
 
@@ -64,6 +64,7 @@ namespace calendar
         {
             SolidBrush brush = new SolidBrush(Color.White);
             source.FillRectangle(brush, new Rectangle(0, 0, width, height));
+            source.DrawLine(new Pen(Color.Black, 5), 0, height/4, width, height/4);
             brush.Dispose();
         }
 
