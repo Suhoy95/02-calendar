@@ -11,16 +11,13 @@ namespace calendar
     {
         public static int[][] GetMothMap(DateTime date)
         {
-            var mouthMap = new int[6][].Select(x => new int[7]).ToArray();
-            
             DateTime curDate = date.AddDays(-date.Day);
-
-            while ((int) curDate.DayOfWeek != 1)
+            while ((int) curDate.DayOfWeek != 1)//Находим понедельник перед первым числом данного месяцаы
                 curDate = curDate.AddDays(-1);
 
-           return mouthMap.Select(week => 
-                                  week.Select(day => getDay(ref curDate, date)).ToArray()
-                                  ).ToArray();
+            return new int[6][].Select(week => 
+                                new int[7].Select(day => getDay(ref curDate, date)).ToArray()
+                                ).ToArray();
         }
 
         private static int getDay(ref DateTime curDate, DateTime date)
@@ -69,7 +66,7 @@ namespace calendar
 
         private static void DrawMouthInfo(Graphics source, DateTime date)
         {
-            string mouthName = date.ToString("M");
+            string mouthName = date.ToString("y");
             Point possition = new Point(width / 2, height / 16);
             source.DrawString(mouthName, drawFont, drawBrush, possition.X, possition.Y, drawFormat);
 
