@@ -41,7 +41,6 @@ namespace calendar
         private static SolidBrush drawBrush = new SolidBrush(System.Drawing.Color.Black);
         private static StringFormat drawFormat = new StringFormat();
 
-
         public static void Render(Graphics source, DateTime date, int newWidth, int newHeight)
         {
             InitParams(newWidth, newHeight);
@@ -68,38 +67,37 @@ namespace calendar
             brush.Dispose();
         }
 
-        private static void DrawMouthMap(Graphics source, DateTime date)
-        {
-            var mouthMap = Calendar.GetMothMap(date);
-            for (int week = 0; week < 6; week++)
-                for (int day = 0; day < 7; day++)
-                {
-                    if (mouthMap[week][day] == date.Day) DrawCircle(source, week, day);
-                    DrawDay(source, mouthMap[week][day], week, day);
-                }
-        }
-
-        private static void DrawCircle(Graphics source, int week, int day)
-        {
-            source.FillRectangle(new SolidBrush(Color.Gainsboro), new Rectangle(width / 7 * day, height / 8 * week + height / 4, width / 7, height / 8));
-        }
-
         private static void DrawMouthInfo(Graphics source, DateTime date)
         {
             string mouthName = date.ToString("M");
             Point possition = new Point(width / 2, height / 16);
             source.DrawString(mouthName, drawFont, drawBrush, possition.X, possition.Y, drawFormat);
 
-            for(int i =0; i < 7; i++)
+            for (int i = 0; i < 7; i++)
                 DrawDayName(source, i);
+        }
+
+        private static void DrawMouthMap(Graphics source, DateTime date)
+        {
+            var mouthMap = Calendar.GetMothMap(date);
+            for (int week = 0; week < 6; week++)
+                for (int day = 0; day < 7; day++)
+                {
+                    if (mouthMap[week][day] == date.Day) DrawSelectDate(source, week, day);
+                    DrawDay(source, mouthMap[week][day], week, day);
+                }
+        }
+
+        private static void DrawSelectDate(Graphics source, int week, int day)
+        {
+            source.FillRectangle(new SolidBrush(Color.Gainsboro), new Rectangle(width / 7 * day, height / 8 * week + height / 4, width / 7, height / 8));
         }
 
         private static int DrawDayName(Graphics canvas, int i)
         {
             string[] days = { "Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс" };
-            string day = days[i];
             Point possition = new Point(width / 7 * i + width/14, height/8 + height/16);
-            canvas.DrawString(day, drawFont, drawBrush, possition.X, possition.Y, drawFormat);
+            canvas.DrawString(days[i], drawFont, drawBrush, possition.X, possition.Y, drawFormat);
             return 0;
         }
 
