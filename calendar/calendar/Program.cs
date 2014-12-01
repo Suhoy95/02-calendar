@@ -13,10 +13,8 @@ namespace calendar
      
         public static void Main(string[] args)
         {
-            int width = 80 * 7, height = width/7*8;
-            Bitmap img = new Bitmap(width, height);
-            Graphics canvas = Graphics.FromImage(img);
-            Calendar_renderer.Render(canvas, new DateTime(2014, 11, 16), width, height);
+            var img_data = Calendar.GetMothMap(new DateTime(2014,11,14));
+            var img = Calendar_renderer.Render(img_data, 50*7, 50*8);
             img.Save("test.png");
         }
     }
