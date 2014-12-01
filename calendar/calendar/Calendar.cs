@@ -135,14 +135,20 @@ namespace calendar
         {
             if((data.Type & Day_type.Selected) == Day_type.Selected)
                 DrawSeletion(canvas, week, day);
-            var dayBrush = (data.Type & Day_type.Active) == Day_type.Active ? Brushes.Black : Brushes.Gray;
-            Point possition = new Point(width / 7 * day + width/16, height / 8 * week + height/4 + height/16);
-            canvas.DrawString(Math.Abs(data.Num).ToString(), drawFont, dayBrush, possition.X, possition.Y, stringFormat);
+
+            var brush = new SolidBrush(Color.FromArgb( ((data.Type & Day_type.Active) == Day_type.Active ? 255 : 128),
+                                                    ((data.Type & Day_type.Rest) == Day_type.Rest ? 255 : 0), 0, 0));
+            
+            WriteDayNumber(canvas, Math.Abs(data.Num), week, day, brush);
         }
 
         private static void DrawSeletion(Graphics canvas, int week, int day)
         {
-            canvas.FillRectangle(Brushes.Orange, cellHeight*2+week*cellHeight, day*cellWidth, cellWidth, cellHeight);
+            canvas.FillRectangle(Brushes.Orange, day*cellWidth, cellHeight*2+week*cellHeight, cellWidth, cellHeight);
+        }
+        private static void WriteDayNumber(Graphics canvas, int Number, int week, int day, Brush brush)
+        {
+            canvas.DrawString(Number.ToString(), drawFont, brush, day*cellWidth + cellWidth/2, 2*cellHeight + week*cellHeight + cellHeight/2, stringFormat);
         }
     }
 }
