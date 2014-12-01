@@ -75,8 +75,7 @@ namespace calendar
                 Format.LineAlignment = StringAlignment.Center;
                 return Format;
             }
-        }
-        
+        }        
 
         public static Bitmap Render(Calendar_data data, int newWidth, int newHeight)
         {
@@ -110,17 +109,16 @@ namespace calendar
 
         private static void DrawMouthInfo(Graphics source, String title)
         {
-            Point possition = new Point(width / 2, height / 16);
-            source.DrawString(title, drawFont, Brushes.Black, possition.X, possition.Y, stringFormat);
+            source.DrawString(title, drawFont, Brushes.Black, width/2, cellHeight/2, stringFormat);
 
             for (int i = 0; i < 7; i++)
                 DrawDayName(source, i);
         }
+
         private static int DrawDayName(Graphics canvas, int i)
         {
             string[] days = { "Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс" };
-            Point possition = new Point(width / 7 * i + width / 14, height / 8 + height / 16);
-            canvas.DrawString(days[i], drawFont, Brushes.Black, possition.X, possition.Y, stringFormat);
+            canvas.DrawString(days[i], drawFont, Brushes.Black, cellWidth*i+cellWidth/2, cellHeight*1.5f, stringFormat);
             return 0;
         }
 
@@ -146,9 +144,10 @@ namespace calendar
         {
             canvas.FillRectangle(Brushes.Orange, day*cellWidth, cellHeight*2+week*cellHeight, cellWidth, cellHeight);
         }
+
         private static void WriteDayNumber(Graphics canvas, int Number, int week, int day, Brush brush)
         {
-            canvas.DrawString(Number.ToString(), drawFont, brush, day*cellWidth + cellWidth/2, 2*cellHeight + week*cellHeight + cellHeight/2, stringFormat);
+            canvas.DrawString(Number.ToString(), drawFont, brush, (day + 0.5f)*cellWidth, (week + 2.5f)*cellHeight, stringFormat);
         }
     }
 }

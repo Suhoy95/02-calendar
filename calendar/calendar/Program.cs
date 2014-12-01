@@ -13,9 +13,10 @@ namespace calendar
      
         public static void Main(string[] args)
         {
-            var img_data = Calendar.GetMothMap(new DateTime(2014,11,14));
-            var img = Calendar_renderer.Render(img_data, 50*7, 25*8);
-            img.Save("test.png");
+            var date = new DateTime(2014, 11, 14);
+            var img_data = Calendar.GetMothMap(date);
+            var img = Calendar_renderer.Render(img_data, 20*7, 65*8);
+            img.Save(date.ToString("dd MMMM yyyy") + ".png");
         }
     }
 }
