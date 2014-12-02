@@ -11,12 +11,23 @@ namespace calendar
     class Program
     {
      
-        public static void Main(string[] args)
+        public static int Main(string[] args)
         {
-            var date = new DateTime(2014, 6, 14);
-            var img_data = Calendar_data_builder.GetMothMap(date, false);
-            var img = Calendar_renderer.Render(img_data, 80*7, 60*8);
-            img.Save(string.Format("{0}_{1}_{2}.png", date.Day, date.Month, date.Year));
+            if(args.Length == 0)
+            {
+                Console.WriteLine("Пожалуйста введите дату для формаирования календаря");
+                return -1;
+            }
+            DateTime date = new DateTime();
+            if (DateTime.TryParse(args[0], out date))
+            {
+                var img_data = Calendar_data_builder.GetMothMap(date);
+                var img = Calendar_renderer.Render(img_data, 80 * 7, 60 * 8);
+                img.Save(string.Format("{0}_{1}_{2}.png", date.Day, date.Month, date.Year));
+            }
+            else
+                Console.WriteLine("Не удалось преобразовать дату");
+            return 0;
         }
     }
 }
