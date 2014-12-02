@@ -31,11 +31,11 @@ namespace calendar
 
     class Calendar_data_builder
     {
-        public static Calendar_data GetMothMap(DateTime date)
+        public static Calendar_data GetMothMap(DateTime date, bool selection = true)
         {
             return new Calendar_data {Title = date.ToString("y"), 
                                       Date = date, 
-                                      DaysMap = FillDaysMap(date),
+                                      DaysMap = FillDaysMap(date, selection),
                                       WeekNumbers = FillWeekNumbers(date),
                                       DayName = new string[] { "Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс" }};
         }
@@ -46,22 +46,22 @@ namespace calendar
             return Enumerable.Range(firstNumbers, 6).ToArray();
         }
 
-        private static Day[][] FillDaysMap(DateTime date)
+        private static Day[][] FillDaysMap(DateTime date, bool selection)
         {
             var firstDay = new DateTime(date.Year, date.Month, 1);
             var indexFirstDay =GetIndexDay(firstDay.DayOfWeek);
             var countDays = (DateTime.DaysInMonth(firstDay.Year, firstDay.Month) + indexFirstDay+6) / 7 * 7;
 
             return Enumerable.Range(0, countDays).Select(shift => { var curDate = firstDay.AddDays(shift-indexFirstDay);
-                                                                     return new Day{Num = curDate, Type = GetType(curDate,date)}; })
+                                                                     return new Day{Num = curDate, Type = GetType(curDate,date, selection)}; })
                                                  .GroupBy(day => day.Num.DayOfWeek).Select(week => week.ToArray()).ToArray();
         }
 
-        private static Day_type GetType(DateTime curDate, DateTime date)
+        private static Day_type GetType(DateTime curDate, DateTime date, bool selection)
         {
            return (curDate.DayOfWeek == DayOfWeek.Sunday || curDate.DayOfWeek == DayOfWeek.Saturday ? Day_type.Rest : 0) |
                   (curDate.Month == date.Month ? Day_type.Active : 0) |
-                  (curDate == date ? Day_type.Selected : 0);
+                  (curDate == date && selection ? Day_type.Selected : 0);
         }
 
         private static int GetIndexDay(DayOfWeek day)
