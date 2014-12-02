@@ -25,6 +25,7 @@ namespace calendar
         public string Title;
         public DateTime Date;
         public Day[][] DaysMap;
+        public int[] WeekNumbers;
         public string[] DayName;
     }
 
@@ -35,13 +36,20 @@ namespace calendar
             return new Calendar_data {Title = date.ToString("y"), 
                                       Date = date, 
                                       DaysMap = FillDaysMap(date),
+                                      WeekNumbers = FillWeekNumbers(date),
                                       DayName = new string[] { "Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс" }};
+        }
+
+        private static int[] FillWeekNumbers(DateTime date)
+        {
+            var firstNumbers = (GetIndexDay(new DateTime(date.Year, 1, 1).DayOfWeek) + date.DayOfYear - date.Day) / 7 + 1;
+            return Enumerable.Range(firstNumbers, 6).ToArray();
         }
 
         private static Day[][] FillDaysMap(DateTime date)
         {
             var firstDay = new DateTime(date.Year, date.Month, 1);
-            var indexFirstDay = ((int)firstDay.DayOfWeek + 6) % 7;
+            var indexFirstDay =GetIndexDay(firstDay.DayOfWeek);
             var countDays = (DateTime.DaysInMonth(firstDay.Year, firstDay.Month) + indexFirstDay+6) / 7 * 7;
 
             return Enumerable.Range(0, countDays).Select(shift => { var curDate = firstDay.AddDays(shift-indexFirstDay);
@@ -54,6 +62,11 @@ namespace calendar
            return (curDate.DayOfWeek == DayOfWeek.Sunday || curDate.DayOfWeek == DayOfWeek.Saturday ? Day_type.Rest : 0) |
                   (curDate.Month == date.Month ? Day_type.Active : 0) |
                   (curDate == date ? Day_type.Selected : 0);
+        }
+
+        private static int GetIndexDay(DayOfWeek day)
+        {
+            return ((int)day + 6) % 7;
         }
     }
 
