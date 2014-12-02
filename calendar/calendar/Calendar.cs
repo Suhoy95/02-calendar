@@ -98,7 +98,7 @@ namespace calendar
         {
             width = newWidth;
             height = newHeight;
-            cellWidth = (float)newWidth/7;
+            cellWidth = (float)newWidth/8;
             cellHeight = (float)newHeight/8;
 
             var fontSize = Math.Min(cellWidth, cellHeight)/2;
@@ -108,7 +108,8 @@ namespace calendar
         private static void DrawBackground(Graphics source)
         {
             source.FillRectangle(Brushes.White, new Rectangle(0, 0, width, height));
-            source.DrawLine(Pens.Black, 0, cellHeight*2, width, cellHeight*2);
+            source.DrawLine(Pens.Black, 0, cellHeight * 2, width, cellHeight * 2);
+            source.DrawLine(Pens.Black, cellWidth, cellHeight, cellWidth, height);
         }
 
         private static void DrawMouthInfo(Graphics source, Calendar_data data)
@@ -116,13 +117,21 @@ namespace calendar
             source.DrawString(data.Title, drawFont, Brushes.Black, width/2, cellHeight/2, stringFormat);
 
             for (int i = 0; i < 7; i++)
-                DrawDayName(source, data.DayName, i);
+                DrawDayName(source, data.DayName[i], i);
+
+            for (int i = 0; i < data.DaysMap.Max(days => days.Length); i++)
+                DrawNumberWeek(source, data.WeekNumbers[i].ToString(), i);
         }
 
-        private static int DrawDayName(Graphics canvas,string[] days , int i)
+        private static int DrawDayName(Graphics source, string day , int i)
         {
-            canvas.DrawString(days[i], drawFont, Brushes.Black, cellWidth*i+cellWidth/2, cellHeight*1.5f, stringFormat);
+            source.DrawString(day, drawFont, Brushes.Black, cellWidth*i+1.5f*cellWidth, cellHeight*1.5f, stringFormat);
             return 0;
+        }
+
+        private static void DrawNumberWeek(Graphics source, string number, int i)
+        {
+            source.DrawString(number, drawFont, Brushes.DarkBlue, cellWidth / 2, cellHeight * 2.5f + cellHeight * i, stringFormat);
         }
 
         private static void DrawMouthMap(Graphics source, Day[][] data)
@@ -145,12 +154,12 @@ namespace calendar
 
         private static void DrawSeletion(Graphics canvas, int week, int day)
         {
-            canvas.FillRectangle(Brushes.Orange, day*cellWidth, cellHeight*2+week*cellHeight, cellWidth, cellHeight);
+            canvas.FillRectangle(Brushes.Orange, (day+1)*cellWidth, cellHeight*2+week*cellHeight, cellWidth, cellHeight);
         }
 
         private static void WriteDayNumber(Graphics canvas, int Number, int week, int day, Brush brush)
         {
-            canvas.DrawString(Number.ToString(), drawFont, brush, (day + 0.5f)*cellWidth, (week + 2.5f)*cellHeight, stringFormat);
+            canvas.DrawString(Number.ToString(), drawFont, brush, (day + 1.5f)*cellWidth, (week + 2.5f)*cellHeight, stringFormat);
         }
     }
 }
