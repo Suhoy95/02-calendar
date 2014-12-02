@@ -10,6 +10,7 @@ namespace calendar
     [Flags]
     enum Day_type
     {
+        None = 0,
         Active = 1,
         Rest = 2,
         Selected = 4
@@ -48,20 +49,23 @@ namespace calendar
 
         private static Day[][] FillDaysMap(DateTime date, bool selection)
         {
-            var firstDay = new DateTime(date.Year, date.Month, 1);
-            var indexFirstDay =GetIndexDay(firstDay.DayOfWeek);
+            var firstDayOfMouth = new DateTime(date.Year, date.Month, 1);
+            var indexFirstDay = GetIndexDay(firstDayOfMouth.DayOfWeek);
+            var firstDay = firstDayOfMouth.AddDays(-indexFirstDay);
             var countDays = (DateTime.DaysInMonth(firstDay.Year, firstDay.Month) + indexFirstDay+6) / 7 * 7;
 
-            return Enumerable.Range(0, countDays).Select(shift => { var curDate = firstDay.AddDays(shift-indexFirstDay);
-                                                                     return new Day{Num = curDate, Type = GetType(curDate,date, selection)}; })
-                                                 .GroupBy(day => day.Num.DayOfWeek).Select(week => week.ToArray()).ToArray();
+            return Enumerable.Range(0, countDays)
+                             .Select(index => firstDay.AddDays(index))
+                             .Select(curDate => new Day { Num = curDate, Type = GetType(curDate, date, selection) })
+                             .Select((x, i) => new { Index = i, day = x })
+                             .GroupBy(x => x.Index / 7).Select(week => week.Select(day => day.day).ToArray()).ToArray();
         }
 
         private static Day_type GetType(DateTime curDate, DateTime date, bool selection)
         {
-           return (curDate.DayOfWeek == DayOfWeek.Sunday || curDate.DayOfWeek == DayOfWeek.Saturday ? Day_type.Rest : 0) |
-                  (curDate.Month == date.Month ? Day_type.Active : 0) |
-                  (curDate == date && selection ? Day_type.Selected : 0);
+            return (curDate.DayOfWeek == DayOfWeek.Sunday || curDate.DayOfWeek == DayOfWeek.Saturday ? Day_type.Rest : Day_type.None) |
+                  (curDate.Month == date.Month ? Day_type.Active : Day_type.None) |
+                  (curDate == date && selection ? Day_type.Selected : Day_type.None);
         }
 
         private static int GetIndexDay(DayOfWeek day)
@@ -123,14 +127,13 @@ namespace calendar
             for (int i = 0; i < 7; i++)
                 DrawDayName(source, data.DayName[i], i);
 
-            for (int i = 0; i < data.DaysMap.Max(days => days.Length); i++)
+            for (int i = 0; i < data.DaysMap.Length; i++)
                 DrawNumberWeek(source, data.WeekNumbers[i].ToString(), i);
         }
 
-        private static int DrawDayName(Graphics source, string day , int i)
+        private static void DrawDayName(Graphics source, string day , int i)
         {
             source.DrawString(day, drawFont, Brushes.Black, cellWidth*i+1.5f*cellWidth, cellHeight*1.5f, stringFormat);
-            return 0;
         }
 
         private static void DrawNumberWeek(Graphics source, string number, int i)
@@ -140,9 +143,9 @@ namespace calendar
 
         private static void DrawMouthMap(Graphics source, Day[][] data)
         {
-            for (int day = 0; day < data.Length; day++)
-                for (int week = 0; week < data[day].Length; week++)
-                    DrawDay(source, data[day][week], week, day);
+            for (int week = 0; week < data.Length; week++)
+                for (int day = 0; day < data[week].Length; day++)
+                    DrawDay(source, data[week][day], week, day);
         }        
 
         private static void DrawDay(Graphics canvas, Day data, int week, int day)

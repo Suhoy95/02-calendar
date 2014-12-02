@@ -49,7 +49,7 @@ namespace calendar
 
         private static void createList(string dateString)
         {
-            DateTime date = new DateTime();
+            DateTime date;
             if (DateTime.TryParse(dateString, out date))
                 CreateCalendarList(date);
             else
