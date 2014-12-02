@@ -16,7 +16,7 @@ namespace calendar
         {
             if(args.Length == 0)
             {
-                Console.WriteLine("Пожалуйста введите дату для формаирования календаря");
+                Console.WriteLine("Недостаточно аргументов. Введите '-h' для справки");
                 return -1;
             }
             for(var i = 0; i < args.Length; i++)
@@ -25,50 +25,66 @@ namespace calendar
                 {
                     switch(GetParams(args[i]))
                     {
-                        case 's':
-                            if(++i >= args.Length)
-                            {
-                                Console.WriteLine("Введите размеры (000X000)");
-                                return -1;
-                            }
-                            var size = args[i].Split(new char[] { 'x', 'X' }).Select(x => int.Parse(x)).ToArray();
-                            width = size[0];
-                            height = size[1];
+                        case 's': changeSize(args, ++i);
                             break;
-                        case 'y':
-                            if (++i >= args.Length)
-                            {
-                                Console.WriteLine("Введите год календаря");
-                                return -1;
-                            }
-                            int year;
-                            if(int.TryParse(args[i], out year))
-                            {
-                                for (var j = 1; j <= 12; j++)
-                                    CreateCalendarList(new DateTime(year, j, 1), false);
-                            }
-                            else
-                            {
-                                Console.WriteLine("Не удалось преобразовать год календаря");
-                            }
+                        case 'y': printCalendar(args, ++i);
+                            break;
+                        case 'h': printHelp();
                             break;
                     }
-                } 
-                else
-                {
-                    DateTime date = new DateTime();
-                    if (DateTime.TryParse(args[i], out date))
-                        CreateCalendarList(date);
-                    else
-                    {
-                        Console.WriteLine("Не удалось преобразовать дату");
-                        return -1;
-                    }
-                    break;
-                }
+                    continue;
+                }                 
+                createList(args[i]);
             }
                      
             return 0;
+        }
+
+        private static void printHelp()
+        {
+            Console.WriteLine("Для получения странниц календаря вводите даты через пробел");
+            Console.WriteLine("'-s[ize] ???x???' - установить размеры изображения");
+            Console.WriteLine("'-y[ear] ????' - создать календарь на год");
+        }
+
+        private static void createList(string dateString)
+        {
+            DateTime date = new DateTime();
+            if (DateTime.TryParse(dateString, out date))
+                CreateCalendarList(date);
+            else
+                Console.WriteLine("Не удалось преобразовать дату");
+        }
+
+        private static void printCalendar(string[] args, int i)
+        {
+            if (i >= args.Length)
+            {
+                Console.WriteLine("После '-y' введите год календаря");
+                return;
+            }
+            int year;
+            if (int.TryParse(args[i], out year))
+            {
+                for (var j = 1; j <= 12; j++)
+                    CreateCalendarList(new DateTime(year, j, 1), false);
+            }
+            else
+            {
+                Console.WriteLine("Не удалось преобразовать год календаря");
+            }
+        }
+
+        private static void changeSize(string[] args, int i)
+        {
+            if (i >= args.Length)
+            {
+                Console.WriteLine("После '-s' введите размеры (000X000)");
+                return;
+            }
+            var size = args[i].Split(new char[] { 'x', 'X' }).Select(x => int.Parse(x)).ToArray();
+            width = size[0];
+            height = size[1];
         }
 
         private static char GetParams(string p)
