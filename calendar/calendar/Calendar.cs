@@ -22,21 +22,26 @@ namespace calendar
 
     struct Calendar_data
     {
+        public string Title;
         public DateTime Date;
         public Day[][] DaysMap;
+        public string[] DayName;
     }
 
     class Calendar_data_builder
     {
         public static Calendar_data GetMothMap(DateTime date)
         {
-            return new Calendar_data {Date = date, DaysMap = FillDaysMap(date)};
+            return new Calendar_data {Title = date.ToString("y"), 
+                                      Date = date, 
+                                      DaysMap = FillDaysMap(date),
+                                      DayName = new string[] { "Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс" }};
         }
 
         private static Day[][] FillDaysMap(DateTime date)
         {
             var firstDay = new DateTime(date.Year, date.Month, 1);
-            var indexFirstDay = getDayIndex(firstDay.DayOfWeek);
+            var indexFirstDay = ((int)firstDay.DayOfWeek + 6) % 7;
             var countDays = (DateTime.DaysInMonth(firstDay.Year, firstDay.Month) + indexFirstDay+6) / 7 * 7;
 
             return Enumerable.Range(0, countDays).Select(shift => { var curDate = firstDay.AddDays(shift-indexFirstDay);
@@ -49,11 +54,6 @@ namespace calendar
            return (curDate.DayOfWeek == DayOfWeek.Sunday || curDate.DayOfWeek == DayOfWeek.Saturday ? Day_type.Rest : 0) |
                   (curDate.Month == date.Month ? Day_type.Active : 0) |
                   (curDate == date ? Day_type.Selected : 0);
-        }
-
-        private static int getDayIndex(DayOfWeek day)
-        {
-            return ((int)day + 6) % 7;
         }
     }
 
@@ -75,7 +75,7 @@ namespace calendar
 
             InitParams(newWidth, newHeight);
             DrawBackground(canvas);
-            DrawMouthInfo(canvas, data.Date.ToString("y"));
+            DrawMouthInfo(canvas, data);
             DrawMouthMap(canvas, data.DaysMap);
             
             return img;
@@ -98,17 +98,16 @@ namespace calendar
             source.DrawLine(Pens.Black, 0, cellHeight*2, width, cellHeight*2);
         }
 
-        private static void DrawMouthInfo(Graphics source, String title)
+        private static void DrawMouthInfo(Graphics source, Calendar_data data)
         {
-            source.DrawString(title, drawFont, Brushes.Black, width/2, cellHeight/2, stringFormat);
+            source.DrawString(data.Title, drawFont, Brushes.Black, width/2, cellHeight/2, stringFormat);
 
             for (int i = 0; i < 7; i++)
-                DrawDayName(source, i);
+                DrawDayName(source, data.DayName, i);
         }
 
-        private static int DrawDayName(Graphics canvas, int i)
+        private static int DrawDayName(Graphics canvas,string[] days , int i)
         {
-            string[] days = { "Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс" };
             canvas.DrawString(days[i], drawFont, Brushes.Black, cellWidth*i+cellWidth/2, cellHeight*1.5f, stringFormat);
             return 0;
         }
