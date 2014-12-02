@@ -80,6 +80,10 @@ namespace calendar
         private static readonly StringFormat stringFormat = new StringFormat { 
                                             Alignment = StringAlignment.Center, 
                                             LineAlignment = StringAlignment.Center };
+        private static SolidBrush[] brushes = {new SolidBrush(Color.FromArgb(255, 255, 0, 0)),
+                                               new SolidBrush(Color.FromArgb(255, 0, 0, 0)),
+                                               new SolidBrush(Color.FromArgb(128, 255, 0, 0)),
+                                               new SolidBrush(Color.FromArgb(128, 0, 0, 0))}; 
 
         public static Bitmap Render(Calendar_data data, int newWidth, int newHeight)
         {
@@ -145,11 +149,20 @@ namespace calendar
         {
             if((data.Type & Day_type.Selected) == Day_type.Selected)
                 DrawSeletion(canvas, week, day);
+                       
+            WriteDayNumber(canvas, data.Num.Day, week, day, GetBrush(data.Type));
+        }
 
-            var brush = new SolidBrush(Color.FromArgb( ((data.Type & Day_type.Active) == Day_type.Active ? 255 : 128),
-                                                    ((data.Type & Day_type.Rest) == Day_type.Rest ? 255 : 0), 0, 0));
-            
-            WriteDayNumber(canvas, data.Num.Day, week, day, brush);
+        private static Brush GetBrush(Day_type day_type)
+        {
+            if ((day_type & (Day_type.Active | Day_type.Rest)) == (Day_type.Active | Day_type.Rest))
+                return brushes[0];
+            if ((day_type & Day_type.Active) == Day_type.Active)
+                return brushes[1];
+            if ((day_type & Day_type.Rest) == Day_type.Rest)
+                return brushes[2];
+
+            return brushes[3];
         }
 
         private static void DrawSeletion(Graphics canvas, int week, int day)
