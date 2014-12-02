@@ -26,14 +26,11 @@ namespace calendar
         public Day[][] DaysMap;
     }
 
-    class Calendar
+    class Calendar_data_builder
     {
         public static Calendar_data GetMothMap(DateTime date)
         {
-            Calendar_data data = new Calendar_data();
-            data.Date = date;
-            data.DaysMap = FillDaysMap(date);
-            return data;
+            return new Calendar_data {Date = date, DaysMap = FillDaysMap(date)};
         }
 
         private static Day[][] FillDaysMap(DateTime date)
@@ -51,7 +48,7 @@ namespace calendar
         {
             Day day = new Day();
             day.Num = curDate.Day;
-            day.Type = ((int)curDate.DayOfWeek == 0 || (int)curDate.DayOfWeek == 6 ? Day_type.Rest : 0) | 
+            day.Type = (curDate.DayOfWeek == DayOfWeek.Sunday || curDate.DayOfWeek == DayOfWeek.Saturday ? Day_type.Rest : 0) | 
                        (curDate.Month == date.Month ? Day_type.Active : 0) | 
                        (curDate == date ? Day_type.Selected : 0);
             curDate = curDate.AddDays(1);
@@ -66,16 +63,9 @@ namespace calendar
         private static int width, height;
         //draw
         private static Font drawFont;
-        private static StringFormat stringFormat
-        {
-            get
-            {
-                var Format = new StringFormat();
-                Format.Alignment = StringAlignment.Center;
-                Format.LineAlignment = StringAlignment.Center;
-                return Format;
-            }
-        }        
+        private static readonly StringFormat stringFormat = new StringFormat { 
+                                            Alignment = StringAlignment.Center, 
+                                            LineAlignment = StringAlignment.Center };
 
         public static Bitmap Render(Calendar_data data, int newWidth, int newHeight)
         {
