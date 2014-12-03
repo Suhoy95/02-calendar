@@ -10,7 +10,7 @@ namespace calendar
 {
     class Program
     {
-        private static int width = 800, height = 600;
+        private static Size size = new Size(800, 600);
      
         public static int Main(string[] args)
         {
@@ -82,9 +82,8 @@ namespace calendar
                 Console.WriteLine("После '-s' введите размеры (000X000)");
                 return;
             }
-            var size = args[i].Split(new char[] { 'x', 'X' }).Select(x => int.Parse(x)).ToArray();
-            width = size[0];
-            height = size[1];
+            var newSize = args[i].Split(new char[] { 'x', 'X' }).Select(x => int.Parse(x)).ToArray();
+            size = new Size(newSize[0], newSize[1]);
         }
 
         private static char GetParams(string p)
@@ -95,7 +94,7 @@ namespace calendar
         private static void CreateCalendarList(DateTime date, bool selected = true)
         {
             var img_data = Calendar_data_builder.GetMothMap(date, selected);
-            var img = Calendar_renderer.Render(img_data, width, height);
+            var img = Calendar_renderer.Render(img_data, size);
             img.Save(string.Format("{0}_{1}_{2}.png", date.Day, date.Month, date.Year));
         }
     }

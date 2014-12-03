@@ -10,29 +10,29 @@ namespace calendar
     {
         public static Calendar_data GetMothMap(DateTime date, bool selection = true)
         {
-            return new Calendar_data
-            {
-                Title = date.ToString("y"),
-                Date = date,
-                DaysMap = FillDaysMap(date, selection),
-                WeekNumbers = FillWeekNumbers(date),
-                DayName = new string[] { "Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс" }
-            };
-        }
-
-        private static int[] FillWeekNumbers(DateTime date)
-        {
-            var firstNumbers = (GetIndexDay(new DateTime(date.Year, 1, 1).DayOfWeek) + date.DayOfYear - date.Day) / 7 + 1;
-            return Enumerable.Range(firstNumbers, 6).ToArray();
-        }
-
-        private static Day[][] FillDaysMap(DateTime date, bool selection)
-        {
             var firstDayOfMouth = new DateTime(date.Year, date.Month, 1);
             var indexFirstDay = GetIndexDay(firstDayOfMouth.DayOfWeek);
             var firstDay = firstDayOfMouth.AddDays(-indexFirstDay);
             var countDays = (DateTime.DaysInMonth(firstDay.Year, firstDay.Month) + indexFirstDay + 6) / 7 * 7;
 
+            return new Calendar_data
+                {
+                    Title = date.ToString("y"),
+                    Date = date,
+                    DaysMap = FillDaysMap(date, firstDay, countDays, selection),
+                    WeekNumbers = FillWeekNumbers(date, (countDays+6)/7),
+                    DayName = new string[] { "Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс" }
+                };
+        }
+
+        private static int[] FillWeekNumbers(DateTime date, int countWeeks)
+        {
+            var firstNumbers = (GetIndexDay(new DateTime(date.Year, 1, 1).DayOfWeek) + date.DayOfYear - date.Day) / 7 + 1;
+            return Enumerable.Range(firstNumbers, countWeeks).ToArray();
+        }
+
+        private static Day[][] FillDaysMap(DateTime date, DateTime firstDay, int countDays, bool selection)
+        {
             return Enumerable.Range(0, countDays)
                              .Select(index => firstDay.AddDays(index))
                              .Select(curDate => new Day { Num = curDate, Type = GetType(curDate, date, selection) })

@@ -22,12 +22,12 @@ namespace calendar
         private static SolidBrush RedActive = new SolidBrush(Color.FromArgb(255, 255, 0, 0));
         private static SolidBrush RedNoActive = new SolidBrush(Color.FromArgb(128, 0, 0, 0));
 
-        public static Bitmap Render(Calendar_data data, int newWidth, int newHeight)
+        public static Bitmap Render(Calendar_data data, Size newSize)
         {
-            Bitmap img = new Bitmap(newWidth, newHeight);
+            Bitmap img = new Bitmap(newSize.Width, newSize.Height);
             Graphics canvas = Graphics.FromImage(img);
 
-            InitParams(newWidth, newHeight);
+            InitParams(newSize);
             DrawBackground(canvas);
             DrawMouthInfo(canvas, data);
             DrawMouthMap(canvas, data.DaysMap);
@@ -35,12 +35,12 @@ namespace calendar
             return img;
         }
 
-        private static void InitParams(int newWidth, int newHeight)
+        private static void InitParams(Size newSize)
         {
-            width = newWidth;
-            height = newHeight;
-            cellWidth = (float)newWidth / 8;
-            cellHeight = (float)newHeight / 8;
+            width = newSize.Width;
+            height = newSize.Height;
+            cellWidth = (float)width / 8;
+            cellHeight = (float)height / 8;
 
             var fontSize = Math.Min(cellWidth, cellHeight) / 2;
             drawFont = new Font("Arial", fontSize);
@@ -60,7 +60,7 @@ namespace calendar
             for (int i = 0; i < 7; i++)
                 DrawDayName(source, data.DayName[i], i);
 
-            for (int i = 0; i < data.DaysMap.Length; i++)
+            for (int i = 0; i < data.WeekNumbers.Length; i++)
                 DrawNumberWeek(source, data.WeekNumbers[i].ToString(), i);
         }
 
